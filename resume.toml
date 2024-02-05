@@ -48,6 +48,7 @@ points = [
 [[projects]]
 name = "Chess Engine"
 skills = "Golang, WebAssembly"
+date = ""
 points = [
   "A chess engine that uses the UCI protocol to communicate with a GUI.",
   "The engine uses Bitboards for board representation and Precomputed Move Tables for fast move generation."
@@ -56,6 +57,7 @@ points = [
 [[projects]]
 name = "PortfolioPal"
 skills = "Python, FastAPI, Scrapy, Docker"
+date = ""
 points = [
   "Portfolio Pal, a stock market app, retrieves financial data from sources such as MoneyControl and YouTube.",
   "The extracted data undergoes processing via Scrapy Pipelines, where it is cleaned, duplicates are removed, insights are drawn, and then stored in a PostgreSQL database. This process happens periodically via a cron job.",
@@ -65,6 +67,7 @@ points = [
 [[projects]]
 name = "Resume Automation"
 skills = "Python, Poetry, Typst, Github Actions"
+date = ""
 points = [
   "Built a pipeline that transforms my YAML-formatted resume into a PDF using Typst (modern LaTeX alternative)",
   "It also publishes my Python package (pip install advik), which displays my resume in the terminal using rich.",
