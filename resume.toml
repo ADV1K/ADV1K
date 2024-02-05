@@ -1,0 +1,88 @@
+[personal]
+name = "Advik"
+summary = "Polyglot Programmer"
+phone = "+91 701 736 4209"
+email = "adviksingh6632@gmail.com"
+github = "github.com/adv1k"
+linkedin = "linkedin.com/in/advik-singh"
+twitter = "twitter.com/ThisIsAdvik"
+portfolio = "advik.one"
+
+[[education]]
+name = "Amity University Noida"
+degree = "Bachelor of Technology in Computer Science"
+location = "Noida, India"
+date = "Aug 2021 - May 2025"
+
+[[experience]]
+role = "Backend Developer"
+name = "Aftershoot"
+location = "Delhi, India"
+date = "Feb 2024 - Present"
+points = [
+  "Contributing to the Python to Rust migration of the backend."
+]
+
+[[experience]]
+role = "Backend Developer"
+name = "Credible Informatics"
+location = "Delhi, India"
+date = "May 2023 - Jan 2024"
+points = [
+  "Developed Portfolio Pal, starting from an abstract Google Doc to a Production API.",
+  "Used Docker (on fly.io) for Deployment and Sentry for monitoring.",
+  "Created an internal dashboard to query ChatGPT against our dashboard, for AI insights"
+]
+
+[[experience]]
+role = "Backend Developer"
+name = "The One World"
+location = "Delhi, India"
+date = "Apr. 2022 - Oct. 2022"
+points = [
+  "Contributed in a seamless migration of the backend from AWS Amplify to FastAPI.",
+  "Implemented JWT authentication and Google OAuth in the API.",
+  "Created a PSQL function to locate nearby shops using Haversine Formula, enhancing the user experience."
+]
+
+[[projects]]
+name = "Chess Engine"
+skills = "Golang, WebAssembly"
+points = [
+  "A chess engine that uses the UCI protocol to communicate with a GUI.",
+  "The engine uses Bitboards for board representation and Precomputed Move Tables for fast move generation."
+]
+
+[[projects]]
+name = "PortfolioPal"
+skills = "Python, FastAPI, Scrapy, Docker"
+points = [
+  "Portfolio Pal, a stock market app, retrieves financial data from sources such as MoneyControl and YouTube.",
+  "The extracted data undergoes processing via Scrapy Pipelines, where it is cleaned, duplicates are removed, insights are drawn, and then stored in a PostgreSQL database. This process happens periodically via a cron job.",
+  "This data is then served to the user via a FastAPI application."
+]
+
+[[projects]]
+name = "Resume Automation"
+skills = "Python, Poetry, Typst, Github Actions"
+points = [
+  "Built a pipeline that transforms my YAML-formatted resume into a PDF using Typst (modern LaTeX alternative)",
+  "It also publishes my Python package (pip install advik), which displays my resume in the terminal using rich.",
+  "Future plan to generate my homepage from the same YAML file."
+]
+
+[[skills]]
+category = "Languages"
+skills = "Python, Golang, Rust, Javascript"
+
+[[skills]]
+category = "Databases"
+skills = "PostgreSQL, MongoDB, SQLite, MySQL"
+
+[[skills]]
+category = "Frameworks"
+skills = "Django, FastAPI, Express, Scrapy, Litestar, Flask"
+
+[[skills]]
+category = "Developer Tools"
+skills = "Git, Docker, Vim, Fish, Tmux, Poetry, Arch BTW"
