@@ -1,0 +1,40 @@
+name: Compile and Publish Resume
+
+on:
+  push:
+    branch: 
+      - main
+    tags:
+      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Typst
+        run: |
+          curl -LO https://github.com/typst/typst/releases/download/v0.10.0/typst-x86_64-unknown-linux-musl.tar.xz
+          tar xf typst-x86_64-unknown-linux-musl.tar.xz
+          sudo mv typst-x86_64-unknown-linux-musl/typst /usr/local/bin
+
+      - name: Compile Resume to PDF
+        run: make
+
+      # - name: Rename file
+      #   run: mv resume.pdf "Advik's Resume (${GITHUB_REF#refs/*/}).pdf"
+
+      - name: Upload PDF file
+        uses: actions/upload-artifact@v4
+        with:
+          name: PDF
+          path: "*.pdf"
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        if: github.ref_type == 'tag'
+        with:
+          name: "Advik's Résumé"
+          files: "*.pdf"
