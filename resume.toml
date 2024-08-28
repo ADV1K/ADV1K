@@ -16,11 +16,13 @@ date = "Aug 2021 - May 2025"
 
 [[experience]]
 role = "Backend Developer"
-name = "Aftershoot"
+name = "Aftershoot AI"
 location = "Delhi, India"
-date = "Feb 2024 - Present"
+date = "Feb 2024 - June 2024"
 points = [
-  "Contributing to the Python to Rust migration of the backend."
+  "Maintained the Python Editing App",
+  "Contributed to the Python to Rust Migration of the Editing App",
+  "Wrote unit and integration tests for a golang service using test containers."
 ]
 
 [[experience]]
