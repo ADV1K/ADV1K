@@ -54,6 +54,7 @@ points = [
 [[projects]]
 name = "PortfolioPal"
 skills = "Python, FastAPI, Scrapy, Docker, PostgreSQL"
+url = ""
 date = ""
 points = [
     "Engineered comprehensive stock market analytics platform aggregating real-time financial data from 15+ sources including MoneyControl, Yahoo Finance, and YouTube, processing 100,000+ data points daily.",
@@ -62,23 +63,25 @@ points = [
 ]
 
 [[projects]]
-name = "Resume Automation"
-skills = "Python, Poetry, Typst, GitHub Actions, CI/CD"
-date = ""
-points = [
-    "Developed automated resume generation system transforming structured YAML data into professional PDFs using Typst (modern LaTeX alternative), reducing manual formatting time by 95% while ensuring consistency across formats.",
-    "Published Python package (pip install advik), featuring rich terminal-based resume display with interactive navigation and color-coded sections for enhanced readability.",
-    "Architected CI/CD pipeline using GitHub Actions for automated testing, building, and PyPI publishing, with future roadmap including dynamic homepage generation and multi-format export capabilities.",
-]
-
-[[projects]]
 name = "Expensify"
 skills = "Next.js, Drizzle ORM, Tailwind CSS, TypeScript"
+url = "expensify.advik.one"
 date = ""
 points = [
     "Built full-stack expense tracking application with modern React architecture, featuring responsive design optimized for mobile and desktop usage.",
     "Implemented type-safe database operations using Drizzle ORM with PostgreSQL, enabling real-time expense categorization, budget tracking, and financial analytics with sub-100ms query performance.",
     "Designed intuitive user interface with Tailwind CSS and DaisyUI components, incorporating data visualization charts, expense trends analysis, and automated spending insights to improve user financial awareness.",
+]
+
+[[projects]]
+name = "Resume Automation"
+skills = "Python, Typst, GitHub Actions"
+url = "resume.advik.one"
+date = ""
+points = [
+    "Developed automated resume generation system transforming structured YAML data into professional PDFs",
+    "Published Python package (pip install advik), featuring rich terminal-based resume display with interactive navigation and color-coded sections for enhanced readability.",
+    "Architected CI/CD pipeline using GitHub Actions for automated building and publishing (resume.advik.one)",
 ]
 
 # SKILLS

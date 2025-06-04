@@ -5,7 +5,7 @@
   show link: set underline(offset: 3pt)
 
   set page(
-    paper: "us-letter",
+    paper: "a4",
     margin: (x: 0.5in, y: 0.5in)
   )
 
@@ -36,7 +36,7 @@
       #phone |
       #link("mailto:" + email)[#email] |
       #link("https://" + linkedin)[#linkedin] |
-      #link("https://" + github)[#github] 
+      #link("https://" + github)[#github]
       // | #link("https://" + portfolio)[#portfolio]
     ]
   )
@@ -54,9 +54,9 @@
 }
 
 #let edu_item(
-  name: "Sample University", 
-  degree: "B.S in Bullshit", 
-  location: "Foo, BA", 
+  name: "Sample University",
+  degree: "B.S in Bullshit",
+  location: "Foo, BA",
   date: "Aug. 1600 - May 1750"
 ) = {
   set block(above: 0.7em, below: 1em)
@@ -101,11 +101,12 @@
   name: "Example Project",
   skills: "Programming Language 1, Database3",
   date: "May 1234 - June 4321",
+  url: "https://example.com",
   ..points
 ) = {
   set block(above: 0.7em, below: 1em)
   pad(left: 1em, right: 0.5em, box[
-    *#name* | _#skills _ #h(1fr) #date
+    *#name* | _#skills _ | #link("https://" + url)[#url] #h(1fr) #date
     #list(..points)
   ])
 }

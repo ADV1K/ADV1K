@@ -44,6 +44,7 @@
       name: proj.name,
       skills: proj.skills,
       date: proj.date,
+      url: proj.url,
       ..proj.points
     )
   }
