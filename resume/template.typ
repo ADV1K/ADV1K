@@ -5,7 +5,7 @@
   show link: set underline(offset: 3pt)
 
   set page(
-    paper: "a4",
+    paper: "us-legal",
     margin: (x: 0.5in, y: 0.5in)
   )
 
