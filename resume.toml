@@ -17,71 +17,70 @@ date = "Aug 2021 - May 2025"
 # EXPERIENCE
 
 [[experience]]
-role = "Backend Developer"
+role = "Backend Intern"
 name = "Aftershoot AI"
 location = "Delhi, India"
 date = "Feb 2024 - June 2024"
 points = [
-    "Optimized Python-based photo editing app serving 25,000+ professional photographers, implementing performance improvements that reduced processing times by 40% across key editing workflows.",
-    "Migrated 4 core image processing modules from Python to Rust, helping achieve 3x performance gains while ensuring API compatibility with existing client integrations.",
-    "Developed comprehensive unit and integration tests for Golang microservices using TestContainers, adding 85% test coverage and reducing production incidents by half.",
+    "Profiled and optimized a Python photo editing app using flamegraphs and performance tools, reducing workflow times by 20%",
+    "Increased reliability of Golang microservices by adding 85% test coverage with TestContainers, cutting production incidents by 50%",
 ]
 
 [[experience]]
-role = "Backend Developer"
+role = "Backend Intern"
 name = "Credible Informatics"
 location = "Delhi, India"
 date = "May 2023 - Jan 2024"
 points = [
-    "Built Portfolio Pal from conceptual design to production-ready API serving 3,500+ active users, transforming abstract requirements into a financial data platform processing 50,000+ daily requests with 99.5% uptime.",
-    "Developed AI analytics dashboard enabling real-time financial insights, processing 15,000+ daily AI queries with custom prompt engineering to deliver contextual market analysis.",
-    "Deployed scalable containerized infrastructure on Fly.io using Docker with Redis caching, implementing monitoring with Sentry to achieve sub-200ms API response times and comprehensive error tracking.",
+    "Built AI dashboard for a financial analytics platform to analyze quarterly earnings calls and stock news with sub-200ms APIs",
+    "Set up automated CI/CD pipelines for fast deployments, integrated Redis caching and Sentry for reliable error tracking"
 ]
 
 [[experience]]
-role = "Backend Developer"
+role = "Backend Intern"
 name = "The One World"
 location = "Delhi, India"
 date = "Apr 2022 - Oct 2022"
 points = [
-    "Migrated AWS Amplify app to FastAPI serving 8,000+ users, reducing infra costs by 35% and improving API response times by 60% using optimized database queries and redis caching.",
-    "Implemented JWT authentication and Google OAuth supporting 12,000+ registered users, with session management, rate limiting, and comprehensive audit logging for enhanced security.",
-    "Built geospatial PostgreSQL function using Haversine Formula to enable proximity-based shop discovery, processing 5,000+ daily location queries within 100km radius with sub-500ms response times.",
+    "Contributed to migrating AWS Amplify app to FastAPI, reducing infra costs by 35% and improving API latency by 60%",
+    "Implemented JWT and Google OAuth for 10,000+ users with rate limiting and audit logging",
+    "Built a geospatial PostgreSQL function for proximity-based shop discovery with sub-500ms responses",
 ]
 
 # PROJECTS
 
 [[projects]]
-name = "PortfolioPal"
-skills = "Python, FastAPI, Scrapy, Docker, PostgreSQL"
-url = ""
+name = "Linux Playground"
+skills = "Go, Firecracker, WebSocket, gRPC"
+url = "github.com/adv1k/linux-playground"
 date = ""
 points = [
-    "Engineered comprehensive stock market analytics platform aggregating real-time financial data from 15+ sources including MoneyControl, Yahoo Finance, and YouTube, processing 100,000+ data points daily.",
-    "Built sophisticated data pipeline using Scrapy with custom middleware, implementing deduplication algorithms and sentiment analysis before PostgreSQL storage via optimized batch operations.",
-    "Deployed production-grade FastAPI application with Redis caching layer, achieving 150ms average response times and serving personalized financial insights to 1,500+ active traders through RESTful endpoints.",
+    "Built a web app to run lightweight Linux VMs with terminal access using Firecracker microVM and xterm.js",
+    "Wrote a custom Go init system for the microVM that handles gRPC commands over vsock",
+    "Wrote another Go service to manage VM lifecycle and proxy commands over WebSocket",
 ]
+
+
+[[projects]]
+name = "Protohacks"
+skills = "Go, Python, Sockets, TCP, UDP"
+url = "github.com/adv1k/protohacks"
+date = ""
+points = [
+    "Built custom TCP and UDP servers, to solve solve network programming challenges from protohackers.com",
+    "Wrote a minimal framework for writing async TCP/UDP servers with route handling, and multiple dispatch",
+    "Wrote a binary serialization library for defining binary message layouts with python type hints",
+]
+
 
 [[projects]]
 name = "Expensify"
-skills = "Next.js, Drizzle ORM, Tailwind CSS, TypeScript"
+skills = "Typescript, Next.js, Drizzle ORM, Tailwind"
 url = "expensify.advik.one"
 date = ""
 points = [
-    "Built full-stack expense tracking application with modern React architecture, featuring responsive design optimized for mobile and desktop usage.",
-    "Implemented type-safe database operations using Drizzle ORM with PostgreSQL, enabling real-time expense categorization, budget tracking, and financial analytics with sub-100ms query performance.",
-    "Designed intuitive user interface with Tailwind CSS and DaisyUI components",
-]
-
-[[projects]]
-name = "Resume Automation"
-skills = "Python, Typst, GitHub Actions"
-url = "resume.advik.one"
-date = ""
-points = [
-    "Developed automated resume generation system transforming structured YAML into professional PDFs",
-    "Published Python package (pip install advik), with rich terminal-based resume display",
-    "Architected CI/CD pipeline using GitHub Actions for automated building and publishing",
+    "Built full-stack expense tracking application with modern React architecture, featuring responsive design optimized for mobile usage",
+    "Designed intuitive user interface with Tailwind CSS and DaisyUI component",
 ]
 
 # SKILLS
