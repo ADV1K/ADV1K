@@ -20,8 +20,16 @@ jobs:
           tar xf typst-x86_64-unknown-linux-musl.tar.xz
           sudo mv typst-x86_64-unknown-linux-musl/typst /usr/local/bin
 
+      - name: Install Lato Font
+        run: |
+          mkdir -p ~/.local/share/fonts
+          curl -L "https://fonts.google.com/download?family=Lato" -o lato.zip
+          unzip lato.zip -d lato
+          cp lato/**/*.ttf ~/.local/share/fonts/
+          fc-cache -fv
+
       - name: Compile Resume to PDF
-        run: make
+        run: make pdf
 
       # - name: Rename file
       #   run: mv resume.pdf "Advik's Resume (${GITHUB_REF#refs/*/}).pdf"
