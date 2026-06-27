@@ -7,6 +7,7 @@
   set page(
     paper: "a4",
     margin: (x: 0.4in, y: 0.4in),
+    footer: align(center, text(size: 0.75em, fill: luma(100), "Last updated in July 2026")),
   )
 
   set text(
