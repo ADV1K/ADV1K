@@ -22,7 +22,7 @@ name = "One2N"
 location = "Pune, India"
 date = "Dec 2025 – July 2026"
 points = [
-  "Built Sherlocks.ai's *_AI SRE infrastructure testing platform_*: a *_chaos engineering_* environment reproducing real-world failure scenarios to validate the AI's ability to detect, diagnose, and resolve incidents",
+  "Built *_AI SRE infrastructure testing platform_* for a funded AI SRE product: a *_chaos engineering_* environment reproducing real‐world failure scenarios to validate the AI's ability to detect, diagnose, and resolve incidents",
   "Provisioned ephemeral, isolated *_EKS, ECS, and EC2_* environments via *_Terraform_* where application stacks could be deployed, broken, and torn down on demand without cross-contamination between test runs",
   "Wired up *_distributed tracing, metrics, and logs_* across all compute substrates to give the AI SRE the same telemetry signals it would see in a production incident",
   # "Designed the failure scenario catalog spanning crash loops, OOM kills, network partitions, certificate failures, and Kafka pipeline failures, covering the full range of incidents the AI would need to handle",
