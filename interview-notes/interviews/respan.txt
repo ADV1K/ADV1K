@@ -1,0 +1,49 @@
+Respan
+https://www.respan.ai/
+
+Role: Backend/Infra Engineer
+Experience: 2-3 years
+Their salary range: $20,000 - $35,000/year
+My ask: $30,000 - $35,000/year (YC-backed startup, direct observability and AWS infra match supports upper end)
+
+Responsibilities:
+- Build Python backend features and own them end-to-end across multi-cloud infra (AWS + Azure)
+- Maintain CI/CD pipelines, container deployments, and monitoring
+- Keep the platform reliable at scale
+- Review PRs critically and push back on design decisions
+- Communicate clearly in an async, fully remote team
+- Work with observability and data-heavy systems (ClickHouse, streaming, high-throughput ingestion)
+
+--- PREP NOTES ---
+
+Technical skills:
+- Python (production backend, profiling, async I/O)
+- AWS: EKS, ECS, EC2, provisioned via Terraform
+- Docker, Kubernetes (container orchestration)
+- Terraform (infra as code, ephemeral test environments)
+- Prometheus, Grafana, OTel Collector, Loki (full observability stack)
+- GitHub Actions (CI/CD pipelines)
+- Redis, PostgreSQL (data layer)
+- LLM integration: OpenAI embeddings, vector DB, RAG pipelines
+
+What I've delivered:
+- Provisioned ephemeral EKS/ECS/EC2 environments via Terraform for chaos engineering at One2N, zero cross-contamination between test runs
+- Deployed full observability stack (Prometheus, Grafana, OTel, Loki) at Aftershoot AI, drove 85% test coverage and 20% reduction in post-deploy tickets
+- Profiled Python image pipeline with flamegraphs, parallelized bottleneck, cut end-to-end workflow time 20%
+- Built RAG pipeline ingesting 10+ financial sources via Scrapy, OpenAI embeddings, vector DB, deployed to production at Credible
+- Migrated 12 REST endpoints to FastAPI at The One World, cutting infra costs 35% and API latency 60%
+
+Questions to ask:
+1. How does Respan handle multi-tenant data isolation for customers with HIPAA requirements?
+2. For a remote async contract, what does incident response look like: shared rotation with core team or an expected response window for the contractor?
+3. What does "genuine engineering partner" mean in practice for a contractor: reviewing production PRs and joining architecture decisions, or is there a scope boundary?
+
+Logistics:
+[ ] Interviewer name confirmed: ___
+[ ] Time zone and dial-in/link confirmed
+[ ] Audio tested
+[ ] Camera / background checked (if video)
+[ ] Quiet space arranged
+[ ] Resume open in front of you
+[ ] This prep doc open in front of you
+[ ] Join 3-5 minutes early

@@ -1,0 +1,94 @@
+
+
+---
+BIGGER PICTURE
+---
+
+Sherlocks.ai sells an "AI SRE". To demonstrate it credibly to enterprise customers, we needed an environment that looked like the environments those customers actually run — not a curated Kubernetes cluster that's been nursed for months. The problem with long-lived demo clusters is drift: installed one-offs, forgotten state, surprise bills, and the creeping dread that the demo you just ran no longer reflects how the product actually works.
+
+So we built a "nuke and pave" playground: a fully Terraform-managed, multi-substrate AWS environment that spins up from scratch in a single `make infra up && make app up`, survives a demo or evaluation, and gets torn down completely when it's done. No runbooks for resetting state. No drift. No long-lived anything. The entire environment is recreatable on demand — and that disposability is the feature, not a tradeoff.
+
+The playground runs on three AWS compute substrates simultaneously: EKS, ECS (EC2-backed), and a standalone EC2 instance. A single Application Load Balancer with host-header routing directs traffic to each. The workload is the OpenTelemetry Demo — ~20 OTel-instrumented microservices in Go, Java, Python, .NET, Rust, and more — deployed independently on each substrate. This lets Sherlocks.ai demonstrate its AI SRE against the full breadth of how enterprises actually run software, not a sanitized subset.
+
+The observability layer runs two APMs side by side on EKS: SigNoz (open-source) and CubeAPM (the product). Both receive the same OTel signals — traces, metrics, and logs — fanned out from a single OTel Collector with no application changes. This turns the playground into a live, multi-substrate comparison tool for the AI SRE to operate against.
+
+---
+WHAT WAS BUILT
+---
+
+## Infrastructure Layer
+
+A single Terraform `infra` stack provisions everything required before any application runs:
+
+- **VPC** with public subnets (ALB, NAT) and private subnets (compute) — one per workspace, so multiple playgrounds can co-exist.
+- **Amazon EKS cluster** — always-on, `t3.xlarge` node group. Sized for the observability tools themselves, which are memory-hungry (SigNoz runs ClickHouse, CubeAPM has its own storage layer).
+- **Amazon ECS cluster** — EC2-backed (not Fargate), single `t3.xlarge` instance. ECS in bridge mode, because that's what lets us map dynamic host ports and use ECS Service Connect for inter-service DNS.
+- **Amazon EC2 instance** — standalone Ubuntu 24.04, enrolled in AWS Systems Manager (no SSH keys needed).
+- **Application Load Balancer** — one ALB handles all three substrates. Host-header routing rules direct traffic to the right target group based on subdomain: `frontend-proxy.eks.<workspace>.domain.com`, `frontend-proxy.ecs.<workspace>.domain.com`, `frontend-proxy.ec2.<workspace>.domain.com`.
+- **ACM certificate** — provisioned and DNS-validated automatically via Cloudflare's DNS-01 challenge.
+- **ALB alarms** — two CloudWatch alarms at the ALB level (5XX error count, rejected connections) trigger an SNS topic → Lambda → Slack notification.
+
+Each of EKS, ECS, and EC2 is toggle-able via a `enable_eks / enable_ecs / enable_ec2` variable, so you can bring up exactly the substrates you need.
+
+## Application Layer — EKS
+
+The EKS application module deploys:
+
+1. **AWS Load Balancer Controller** — required to register EKS pod IPs directly into ALB target groups via `TargetGroupBinding` CRDs. This is how the single shared ALB can route to Kubernetes services without a separate NLB.
+2. **SigNoz** (Helm chart `0.117.1`) — the open-source APM backend. Runs ClickHouse for trace/log/metric storage. Gets a subdomain: `signoz.eks.<workspace>.domain.com`.
+3. **CubeAPM** (Helm chart `1.14.2`) — the commercial APM. Gets its own subdomain for the UI (`cubeapm.<workspace>.domain.com`) and separate subdomains for its API endpoints.
+4. **k8s-infra** (SigNoz's Helm chart `0.15.0`) — deploys an OTel Collector as a DaemonSet (one agent per node) and a central Deployment for cluster-level metadata. The agent is configured to fan telemetry out to *both* APMs simultaneously: SigNoz gets signals via the default `otlp` exporter, CubeAPM gets metrics/logs/traces via separate `otlphttp` exporters pointing at its specific ingest endpoints. `resourcedetection` is set to `["eks", "system"]` so every signal carries cluster and node metadata.
+5. **OTel Demo app** (local Helm chart) — deployed into its own namespace, with `frontend-proxy` wired to the shared ALB via a `TargetGroupBinding`.
+
+## Application Layer — ECS
+
+ECS runs a decomposed version of the OTel Demo. Because ECS tasks in bridge mode can't share a localhost network namespace, service-to-service communication is handled by **ECS Service Connect** — each service registers a DNS alias in a private Cloud Map namespace (`<service>.local`), and the OTel collector is registered as `otel-collector:4317` so all app containers can discover it with zero configuration changes.
+
+Deployment is structured in phases to respect startup ordering:
+
+- **Phase 1** (infrastructure services): valkey-cart, postgresql, kafka, currency, quote, image-provider, flagd
+- **Phases 2–6** build on top of phase 1, with each subsequent `aws_ecs_service` group having `depends_on` set to the previous group.
+
+The OTel Collector runs as its own ECS service (not a sidecar), using `opentelemetry-collector-contrib:0.146.1`. Its configuration is rendered from a Terraform template and injected as an environment variable (`OTEL_CONFIG`). The config includes:
+- `resourcedetection` processor with `[env, ec2, system]` detectors — picks up EC2 instance metadata automatically.
+- A `resource` processor that stamps `deployment.environment = ecs` on every signal, so the APMs can filter by substrate.
+- Three `otlphttp` exporters: one pointing at `signoz-otel-collector.eks.<workspace>.domain.com` (the public HTTPS endpoint of SigNoz on EKS), and two pointing at CubeAPM's metrics and logs ingest endpoints, and one for traces. Both APMs receive all signals.
+
+Artifacts (config files, flagd configs, init SQL) are bundled as a zip, uploaded to S3 via `make app upload-src`, then synced to the ECS node via SSM `send-command`. ECS task definitions reference host-mounted paths from the unzipped artifact directory.
+
+## Application Layer — EC2
+
+The EC2 deployment is the simplest: Docker Compose. The same artifact zip is synced to the EC2 instance via SSM `send-command`, then `docker compose up -d` is executed remotely. The Terraform `terraform_data` resource with `local-exec` blocks manages this, polling SSM for completion and surfacing deployment logs if it fails.
+
+The `frontend-proxy` container binds to a fixed host port, and the ALB target group registers the EC2 instance ID directly.
+
+## Orchestration
+
+A `Makefile` provides the developer-facing CLI:
+- `make infra init` — scaffolds `terraform.tfvars` and configures the S3 remote backend.
+- `make infra up` — provisions all infrastructure for a given workspace.
+- `make app upload-src` — clones the OTel demo, bundles artifacts, pushes to S3.
+- `make app up` — deploys all app components (EKS Helm charts, ECS services, EC2 Docker Compose).
+- `make signoz-init` — calls a Python script to create alert channels and set up default alerts in SigNoz.
+
+Three GitHub Actions workflows automate the full lifecycle: `provision.yml` (infra + app up), `destroy.yml` (app + infra down), `main-lifecycle.yml` (full end-to-end). All are parameterized by workspace and region, and dispatched manually or via `workflow_call`.
+
+Terraform state is stored in S3 with DynamoDB locking, partitioned by Terraform workspace. This allows multiple playground environments to co-exist in the same account without state collision.
+
+---
+WHAT THE BLOG SHOULD DEMONSTRATE
+---
+
+The central question the blog answers is: what does it actually take to build a disposable, multi-substrate AWS environment that an AI SRE can operate against credibly — and what did we learn doing it?
+
+Key angles (in priority order):
+
+1. **The "nuke and pave" lifecycle as a design principle** — the entire environment is recreatable from `make infra up && make app up` and torn down with the inverse. Three GitHub Actions workflows automate the full lifecycle: provision, destroy, and end-to-end. Terraform state is partitioned by workspace in S3 so multiple playgrounds can co-exist in the same AWS account without collision. This is the core argument of the post: disposability is a feature, not a compromise.
+
+2. **What the multi-substrate Terraform architecture looks like** — two independently managed stacks (infra and app) sharing state via `data.terraform_remote_state`. Compute tier flags (`enable_eks`, `enable_ecs`, `enable_ec2`) let you bring up exactly the substrates you need. One ALB with host-header routing handles all three simultaneously. One ACM wildcard cert covers all subdomains per workspace. This is the platform engineering blueprint readers can take away.
+
+3. **How OTel collection differs per substrate** — same OTel Collector binary, three different deployment models: DaemonSet agent on EKS, dedicated ECS Service Connect service on ECS, Docker Compose service on EC2. Each substrate requires a different approach to service discovery, collector placement, and startup ordering. The ECS phased deployment (6 phases, `depends_on` chaining) is a concrete example of a constraint most Kubernetes-native engineers haven't hit.
+
+4. **The dual-APM fan-out** — every OTel signal goes to both SigNoz and CubeAPM simultaneously from a single collector config, with no application changes. This demonstrates the vendor-neutral value of OTel as a routing layer and turns the playground into a live APM comparison tool.
+
+5. **Resource enrichment per substrate** — `resourcedetection` stamps different metadata depending on where the collector runs. EKS signals carry `k8s.node.name`, `k8s.pod.name`. ECS and EC2 signals carry EC2 instance metadata. A `resource` processor stamps `deployment.environment` on every signal so the APMs can filter by substrate. This matters when the AI SRE is correlating a trace to an infrastructure event.

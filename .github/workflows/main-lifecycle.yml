@@ -1,0 +1,16 @@
+name: Main Branch Lifecycle Test
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  provision:
+    uses: ./.github/workflows/provision.yml
+    secrets: inherit
+
+  destroy:
+    needs: provision
+    uses: ./.github/workflows/destroy.yml
+    secrets: inherit

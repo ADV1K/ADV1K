@@ -1,0 +1,104 @@
+[personal]
+name = "Advik Singh"
+summary = "Polyglot Programmer"
+phone = "+91 70173 64209"
+email = "hi@advik.one"
+github = "github.com/adv1k"
+linkedin = "linkedin.com/in/advik-singh"
+twitter = "twitter.com/ThisIsAdvik"
+portfolio = "advik.one"
+
+[[education]]
+name = "Amity University"
+degree = "Bachelor of Technology in Computer Science"
+location = "Noida, India"
+date = "Aug 2021 – May 2025"
+
+# EXPERIENCE
+
+[[experience]]
+role = "SRE - 1"
+name = "One2N"
+location = "Pune, India"
+date = "Dec 2025 – July 2026"
+points = [
+  "Built *_AI SRE infrastructure testing platform_* for a funded AI SRE product: a *_chaos engineering_* environment reproducing real‐world failure scenarios to validate the AI's ability to detect, diagnose, and resolve incidents",
+  "Provisioned ephemeral, isolated *_EKS, ECS, and EC2_* environments via *_Terraform_* where application stacks could be deployed, broken, and torn down on demand without cross-contamination between test runs",
+  "Wired up *_distributed tracing, metrics, and logs_* across all compute substrates to give the AI SRE the same telemetry signals it would see in a production incident",
+  # "Designed the failure scenario catalog spanning crash loops, OOM kills, network partitions, certificate failures, and Kafka pipeline failures, covering the full range of incidents the AI would need to handle",
+  # "Set up per-account AWS Budget controls with automated resource termination so test environments could run continuously without cost overruns",
+]
+
+[[experience]]
+role = "SRE Intern"
+name = "Aftershoot AI"
+location = "Delhi, India"
+date = "Feb 2024 – June 2024"
+points = [
+  "Profiled a Python image processing pipeline with *_flamegraphs_* and found thumbnail generation was blocking the upload queue, parallelized it with a thread pool, cutting end-to-end workflow time by *_20%_*",
+  "Increased reliability of Go microservices by writing *_integration tests_* against Staging Postgres and Redis, bringing coverage to *_85%_* and reducing post-deployment support tickets by *_20%_* over 3 months",
+  "Set up a full *_observability stack_* (*_Prometheus, Grafana, OTel Collector, Loki_*) across Go microservices and the image processing pipeline, with dashboards tracking *_p95 latency_* and error rates",
+]
+
+[[experience]]
+role = "SDE Intern"
+name = "Credible Informatics"
+location = "Delhi, India"
+date = "May 2023 – Jan 2024"
+points = [
+    "Built an *_AI stock research dashboard_* where retail investors could track any company, ask free-form questions, and get *_GPT answers grounded in real earnings transcripts_*, financial news, and YouTube commentary",
+    "Automated ingestion of *_10+ financial sources_* via *_Scrapy crawlers_* on a cron schedule, generated *_OpenAI embeddings_*, and stored them in a *_vector DB_* to ground every LLM response in real market data",
+    # "Kept API latency under 200ms by caching LLM responses in Redis, parallelizing GPT calls with async I/O, and optimizing sql queries to avoid pulling redundant results per symbol",
+    "Shipped a *_Telegram bot_* for daily AI-generated portfolio digests and deployed the full stack to *_fly.io_* via *_GitHub Actions_*, with *_Sentry_* for production error tracking",
+]
+
+[[experience]]
+role = "SDE Intern"
+name = "The One World"
+location = "Delhi, India"
+date = "Apr 2022 – Oct 2022"
+points = [
+    "Migrated *_12 REST endpoints_* from AWS Amplify to *_FastAPI_*, eliminating cold start overhead and refactoring core request handlers to cut infrastructure costs by *_35%_* and API latency by *_60%_*",
+    "Built a *_PostGIS query with GIST indexing_* over 5,000+ shop locations for proximity-based discovery, delivering *_sub-500ms response times_* under concurrent load",
+    # "Automated deployment by building a GitHub Actions pipeline that builds and pushes Docker images on every merge to main, with zero-touch container updates on the host VM eliminating manual redeploys",
+    "Implemented *_JWT and Google OAuth 2.0_* for a neighborhood society app serving *_1000+ residents_*",
+]
+
+# PROJECTS
+
+[[projects]]
+name = "Linux Playground"
+skills = "Go, Firecracker, WebSocket, gRPC"
+url = "github.com/adv1k/linux-playground"
+date = ""
+points = [
+    "Built a web app to run lightweight *_Linux VMs_* with terminal access using *_Firecracker microVM_* and *_xterm.js_*",
+    "Wrote a custom *_Go init system_* for the microVM that handles *_gRPC commands over vsock_*",
+    "Wrote another Go service to manage *_VM lifecycle_* and proxy commands over *_WebSocket_*",
+]
+
+
+[[projects]]
+name = "Protohacks"
+skills = "Go, Python, Sockets, TCP, UDP"
+url = "github.com/adv1k/protohacks"
+date = ""
+points = [
+    "Built custom *_TCP and UDP servers_*, to solve network programming challenges from protohackers.com",
+    "Wrote a minimal framework for writing *_async TCP/UDP servers_* with route handling, and multiple dispatch",
+    "Wrote a *_binary serialization library_* for defining binary message layouts with *_python type hints_*",
+]
+
+# SKILLS
+
+[[skills]]
+category = "Backend"
+skills = "Python, Go, Typescript, FastAPI, Next.js, Django, Scrapy, PostgreSQL, PostGIS, Redis, MongoDB"
+
+[[skills]]
+category = "Observability"
+skills = "Prometheus, Grafana, Loki, OpenTelemetry, Signoz, CubeAPM"
+
+[[skills]]
+category = "Infrastructure"
+skills = "Terraform, Docker, Kubernetes, Envoy, Github Actions, AWS (VPC, EKS, ECS, EC2, ALB, ACM, SNS, S3)"

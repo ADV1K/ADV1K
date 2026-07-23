@@ -1,0 +1,95 @@
+name: Destroy Infrastructure and App
+
+on:
+  workflow_dispatch:
+    inputs:
+      workspace:
+        description: "Terraform workspace name"
+        required: true
+        default: "github"
+      app:
+        description: "App name (e.g., otel-demo)"
+        required: true
+        default: "otel-demo"
+      region:
+        description: "AWS Region"
+        required: true
+        default: "us-east-1"
+      account_id:
+        description: "AWS Account ID"
+        required: true
+        default: "196010726378"
+      state_bucket:
+        description: "Terraform state S3 bucket (optional, defaults to playground-tfstate-<account_id>)"
+        required: true
+        default: "playground-tfstate-196010726378"
+  workflow_call:
+    inputs:
+      workspace: { type: string, default: "github" }
+      app: { type: string, default: "otel-demo" }
+      region: { type: string, default: "us-east-1" }
+      account_id: { type: string, default: "196010726378" }
+      state_bucket: { type: string, default: "playground-tfstate-196010726378" }
+
+jobs:
+  destroy:
+    name: Destroying workspace ${{ inputs.workspace || github.event.inputs.workspace }}
+    runs-on: ubuntu-latest
+    env:
+      WORKSPACE: ${{ inputs.workspace || github.event.inputs.workspace }}
+      APP: ${{ inputs.app || github.event.inputs.app }}
+      REGION: ${{ inputs.region || github.event.inputs.region }}
+      ACCOUNT_ID: ${{ inputs.account_id || github.event.inputs.account_id }}
+      STATE_BUCKET: ${{ (inputs.state_bucket || github.event.inputs.state_bucket) }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.REGION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.14.0"
+          terraform_wrapper: false
+
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v3
+
+      - name: Initialize Infra Module
+        run: |
+          make infra init \
+            WORKSPACE=${{ env.WORKSPACE }} \
+            ACCOUNT_ID=${{ env.ACCOUNT_ID }} \
+            REGION=${{ env.REGION }} \
+            STATE_BUCKET=${{ env.STATE_BUCKET }}
+
+      - name: Initialize App Module
+        run: |
+          make app init \
+            WORKSPACE=${{ env.WORKSPACE }} \
+            ACCOUNT_ID=${{ env.ACCOUNT_ID }} \
+            REGION=${{ env.REGION }} \
+            APP=${{ env.APP }} \
+            STATE_BUCKET=${{ env.STATE_BUCKET }}
+
+      - name: Decommission App
+        run: |
+          make app down \
+            WORKSPACE=${{ env.WORKSPACE }} \
+            ACCOUNT_ID=${{ env.ACCOUNT_ID }} \
+            REGION=${{ env.REGION }} \
+            APP=${{ env.APP }}
+
+      - name: Destroy Infrastructure
+        run: |
+          make infra down \
+            WORKSPACE=${{ env.WORKSPACE }} \
+            ACCOUNT_ID=${{ env.ACCOUNT_ID }} \
+            REGION=${{ env.REGION }}

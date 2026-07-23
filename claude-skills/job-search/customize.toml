@@ -1,0 +1,17 @@
+# DO NOT EDIT — overwritten on every update.
+#
+# Customization surface for the job-search skill.
+#
+# Override files:
+#   ~/.claude/skills/job-search.toml        (user overrides)
+
+[workflow]
+
+# Path to the persistent context file
+context_file = "~/fun/adv1k/job-search/context.md"
+
+# Path to the resume TOML
+resume_path = "~/fun/adv1k/resume.toml"
+
+# Blog URLs to fetch during REFRESH-CONTEXT (can be extended in overrides)
+blog_urls = []

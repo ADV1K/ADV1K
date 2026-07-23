@@ -1,0 +1,209 @@
+name: Provision Infrastructure and App
+
+on:
+  workflow_dispatch:
+    inputs:
+      workspace:
+        description: "Terraform workspace name"
+        required: true
+        default: "github"
+      app:
+        description: "App name (e.g., otel-demo)"
+        required: true
+        default: "otel-demo"
+      region:
+        description: "AWS Region"
+        required: true
+        default: "us-east-1"
+      account_id:
+        description: "AWS Account ID"
+        required: true
+        default: "196010726378"
+      enable_eks:
+        description: "Deploy app on EKS?"
+        type: boolean
+        default: true
+      enable_ecs:
+        description: "Deploy app on ECS?"
+        type: boolean
+        default: true
+      enable_ec2:
+        description: "Deploy app on EC2?"
+        type: boolean
+        default: true
+      domain_name:
+        description: "Base domain name"
+        required: true
+        default: "play.sherlocks.io"
+      app_git_repo:
+        description: "Git repository URL for the application"
+        required: true
+        default: "https://github.com/open-telemetry/opentelemetry-demo/"
+      state_bucket:
+        description: "Terraform state S3 bucket"
+        required: true
+        default: "playground-tfstate-196010726378"
+      artifact_bucket:
+        description: "S3 bucket for app artifacts"
+        required: true
+        default: "playground-app-artifacts"
+      cloudflare_zone_id:
+        description: "Cloudflare Zone ID"
+        required: true
+      cloudflare_api_token:
+        description: "Cloudflare API Token"
+        required: true
+      slack_webhook_url:
+        description: "Slack Webhook URL for alerts"
+        required: false
+      cubeapm_token:
+        description: "CubeAPM License Token"
+        required: false
+      cubeapm_session_key:
+        description: "CubeAPM Session Key"
+        required: false
+      signoz_email:
+        description: "SigNoz Admin Email"
+        required: false
+        default: "akshat@migratefast.com"
+      signoz_password:
+        description: "SigNoz Admin Password"
+        required: false
+        default: "Admin@123456"
+
+  workflow_call:
+    inputs:
+      workspace: { type: string, default: "github" }
+      app: { type: string, default: "otel-demo" }
+      region: { type: string, default: "us-east-1" }
+      account_id: { type: string, default: "196010726378" }
+      enable_eks: { type: string, default: "true" }
+      enable_ecs: { type: string, default: "true" }
+      enable_ec2: { type: string, default: "true" }
+      domain_name: { type: string, default: "play.advik.one" }
+      app_git_repo:
+        {
+          type: string,
+          default: "https://github.com/open-telemetry/opentelemetry-demo/",
+        }
+      state_bucket: { type: string, default: "playground-tfstate-196010726378" }
+      artifact_bucket: { type: string, default: "playground-app-artifacts" }
+      cloudflare_zone_id: { type: string, default: "" }
+      cloudflare_api_token: { type: string, default: "" }
+      slack_webhook_url: { type: string, default: "" }
+      cubeapm_token: { type: string, default: "" }
+      cubeapm_session_key: { type: string, default: "" }
+      signoz_email: { type: string, default: "akshat@migratefast.com" }
+      signoz_password: { type: string, default: "Admin@123456" }
+
+jobs:
+  provision:
+    name: Provisioning workspace ${{ inputs.workspace || github.event.inputs.workspace }}
+    runs-on: ubuntu-latest
+    env:
+      WORKSPACE: ${{ inputs.workspace || github.event.inputs.workspace }}
+      APP: ${{ inputs.app || github.event.inputs.app }}
+      REGION: ${{ inputs.region || github.event.inputs.region }}
+      ACCOUNT_ID: ${{ inputs.account_id || github.event.inputs.account_id }}
+      ENABLE_EKS: ${{ inputs.enable_eks || github.event.inputs.enable_eks }}
+      ENABLE_ECS: ${{ inputs.enable_ecs || github.event.inputs.enable_ecs }}
+      ENABLE_EC2: ${{ inputs.enable_ec2 || github.event.inputs.enable_ec2 }}
+      DOMAIN_NAME: ${{ inputs.domain_name || github.event.inputs.domain_name }}
+      APP_GIT_REPO: ${{ inputs.app_git_repo || github.event.inputs.app_git_repo }}
+      STATE_BUCKET: ${{ (inputs.state_bucket || github.event.inputs.state_bucket) }}
+      ARTIFACT_BUCKET: ${{ inputs.artifact_bucket || github.event.inputs.artifact_bucket }}
+      CLOUDFLARE_ZONE_ID: ${{ inputs.cloudflare_zone_id || github.event.inputs.cloudflare_zone_id || secrets.CLOUDFLARE_ZONE_ID }}
+      CLOUDFLARE_API_TOKEN: ${{ (inputs.cloudflare_api_token || github.event.inputs.cloudflare_api_token) || secrets.CLOUDFLARE_API_TOKEN }}
+      SLACK_WEBHOOK_URL: ${{ (inputs.slack_webhook_url || github.event.inputs.slack_webhook_url) || secrets.SLACK_WEBHOOK_URL }}
+      CUBEAPM_TOKEN: ${{ (inputs.cubeapm_token || github.event.inputs.cubeapm_token) || secrets.CUBEAPM_TOKEN }}
+      CUBEAPM_SESSION_KEY: ${{ inputs.cubeapm_session_key || github.event.inputs.cubeapm_session_key || secrets.CUBEAPM_SESSION_KEY }}
+      SIGNOZ_EMAIL: ${{ inputs.signoz_email || github.event.inputs.signoz_email }}
+      SIGNOZ_PASSWORD: ${{ inputs.signoz_password || github.event.inputs.signoz_password }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.REGION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.14.0"
+          terraform_wrapper: false
+
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v3
+
+      - name: Install zip
+        run: sudo apt-get update && sudo apt-get install -y zip
+
+      - name: Initialize Infra Module
+        run: |
+          make infra init \
+            WORKSPACE=${{ env.WORKSPACE }} \
+            ACCOUNT_ID=${{ env.ACCOUNT_ID }} \
+            REGION=${{ env.REGION }} \
+            ENABLE_EKS=${{ env.ENABLE_EKS }} \
+            ENABLE_ECS=${{ env.ENABLE_ECS }} \
+            ENABLE_EC2=${{ env.ENABLE_EC2 }} \
+            DOMAIN_NAME=${{ env.DOMAIN_NAME }} \
+            STATE_BUCKET=${{ env.STATE_BUCKET }} \
+            CLOUDFLARE_ZONE_ID=${{ env.CLOUDFLARE_ZONE_ID }} \
+            CLOUDFLARE_API_TOKEN=${{ env.CLOUDFLARE_API_TOKEN }} \
+            SLACK_WEBHOOK_URL=${{ env.SLACK_WEBHOOK_URL }}
+
+      - name: Initialize App Module
+        run: |
+          make app init \
+            WORKSPACE=${{ env.WORKSPACE }} \
+            ACCOUNT_ID=${{ env.ACCOUNT_ID }} \
+            REGION=${{ env.REGION }} \
+            APP=${{ env.APP }} \
+            DOMAIN_NAME=${{ env.DOMAIN_NAME }} \
+            STATE_BUCKET=${{ env.STATE_BUCKET }} \
+            ARTIFACT_BUCKET=${{ env.ARTIFACT_BUCKET }} \
+            CUBEAPM_TOKEN=${{ env.CUBEAPM_TOKEN }} \
+            CUBEAPM_SESSION_KEY=${{ env.CUBEAPM_SESSION_KEY }}
+
+      - name: Provision Infrastructure
+        run: |
+          make infra up \
+            WORKSPACE=${{ env.WORKSPACE }} \
+            ACCOUNT_ID=${{ env.ACCOUNT_ID }} \
+            REGION=${{ env.REGION }} \
+            ENABLE_EKS=${{ env.ENABLE_EKS }} \
+            ENABLE_ECS=${{ env.ENABLE_ECS }} \
+            ENABLE_EC2=${{ env.ENABLE_EC2 }}
+
+      - name: Deploy App
+        run: |
+          make app upload-src \
+            WORKSPACE=${{ env.WORKSPACE }} \
+            ACCOUNT_ID=${{ env.ACCOUNT_ID }} \
+            REGION=${{ env.REGION }} \
+            APP=${{ env.APP }} \
+            APP_GIT_REPO=${{ env.APP_GIT_REPO }} \
+            ARTIFACT_BUCKET=${{ env.ARTIFACT_BUCKET }} \
+            DOMAIN_NAME=${{ env.DOMAIN_NAME }}
+
+          make app up \
+            WORKSPACE=${{ env.WORKSPACE }} \
+            ACCOUNT_ID=${{ env.ACCOUNT_ID }} \
+            REGION=${{ env.REGION }} \
+            APP=${{ env.APP }}
+
+      - name: Create Signoz Alerts
+        run: |
+          make signoz-init \
+            WORKSPACE=${{ env.WORKSPACE }} \
+            SIGNOZ_EMAIL=${{ env.SIGNOZ_EMAIL }} \
+            SIGNOZ_PASSWORD=${{ env.SIGNOZ_PASSWORD }}
